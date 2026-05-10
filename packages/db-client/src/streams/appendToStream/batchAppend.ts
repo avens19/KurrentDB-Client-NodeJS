@@ -64,7 +64,13 @@ export const batchAppend = async function (
         )
         .on("data", (resp: BatchAppendResp) => {
           const resultingId = parseUUID(resp.getCorrelationId()!);
-          const [resolve, reject] = promiseBank.get(resultingId)!;
+          const entry = promiseBank.get(resultingId);
+
+          if (!entry) {
+            return;
+          }
+
+          const [resolve, reject] = entry;
 
           promiseBank.delete(resultingId);
 
